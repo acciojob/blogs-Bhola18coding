@@ -1,65 +1,48 @@
 package com.driver.services;
 
 import com.driver.models.*;
-import com.driver.repositories.ImageRepository;
+import com.driver.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ImageService {
+
+    @Autowired
+    BlogRepository blogRepository2;
     @Autowired
     ImageRepository imageRepository2;
 
-    public Image createAndReturn(Blog blog, String description, String dimensions){
+    public Image addImage(Integer blogId, String description, String dimensions){
+        //add an image to the blog
+        Blog blog = blogRepository2.findById(blogId).get();
         Image image = new Image();
         image.setDescription(description);
         image.setDimensions(dimensions);
         image.setBlog(blog);
-        imageRepository2.save(image);
+        blog.getImageList().add(image);
+        blogRepository2.save(blog);
+
         return image;
+
     }
 
-    public void deleteImage(Image image){
-        System.out.println(image.getId());
-        imageRepository2.delete(image);
-        System.out.println(imageRepository2.findAll().size());
+    public void deleteImage(Integer id){
+        imageRepository2.deleteById(id);
     }
 
-    public Image findById(int id) {
-        return imageRepository2.findById(id).get();
-    }
-
-    public int countImagesInScreen(Image image, String screenDimensions) {
+    public int countImagesInScreen(Integer id, String screenDimensions) {
         //Find the number of images of given dimensions that can fit in a screen having `screenDimensions`
-        String dimensions = image.getDimensions();
-        int xi = 0;
-        int yi = 0;
-        int xs = 0;
-        int ys = 0;
-        int num = 0;
-        for(int i = 0; i<dimensions.length(); i++){
-            if(dimensions.charAt(i) == 'X'){
-                xi = num;
-                num = 0;
-                continue;
-            }
-            num *= 10;
-            num += (dimensions.charAt(i) - '0');
-        }
-        yi = num;
-        num = 0;
-        for(int i = 0; i<screenDimensions.length(); i++){
-            if(screenDimensions.charAt(i) == 'X'){
-                xs = num;
-                num = 0;
-                continue;
-            }
-            num *= 10;
-            num += (screenDimensions.charAt(i) - '0');
-        }
-        ys = num;
+        Image image = imageRepository2.findById(id).get();
 
-        int ans = (int) (Math.floor((new Double(xs))/(new Double(xi))) * Math.floor((new Double(ys))/(new Double(yi))));
-        return ans;
+        String[] totalArea = screenDimensions.split("X");
+        String[] givenImageArea = image.getDimensions().split("X");
+
+        int l = Integer.parseInt(totalArea[0]) / Integer.parseInt(givenImageArea[0]);
+        int b = Integer.parseInt(totalArea[1]) / Integer.parseInt(givenImageArea[1]);
+
+        return l * b;
     }
 }

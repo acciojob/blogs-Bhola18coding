@@ -1,7 +1,7 @@
 package com.driver.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.springframework.format.annotation.DateTimeFormat;
+import net.bytebuddy.dynamic.loading.InjectionClassLoader;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -16,30 +16,12 @@ public class Blog {
     private int id;
     private String title;
     private String content;
+    @CreatedDate
     private Date pubDate;
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public List<Image> getImageList() {
-        return imageList;
-    }
-
-    public void setImageList(List<Image> imageList) {
-        this.imageList = imageList;
-    }
 
     @ManyToOne
     @JoinColumn
     private User user;
-
-    @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL)
-    private List<Image> imageList;
 
     public int getId() {
         return id;
@@ -68,7 +50,37 @@ public class Blog {
     public Date getPubDate() {
         return pubDate;
     }
+
     public void setPubDate(Date pubDate) {
         this.pubDate = pubDate;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Blog() {
+    }
+
+    public Blog(int id, String title, String content, Date pubDate) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.pubDate = pubDate;
+    }
+
+    @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL)
+    List<Image> imageList = new ArrayList<>();
+
+    public List<Image> getImageList() {
+        return imageList;
+    }
+
+    public void setImageList(List<Image> imageList) {
+        this.imageList = imageList;
     }
 }

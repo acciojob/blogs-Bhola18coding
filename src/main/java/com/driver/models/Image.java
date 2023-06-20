@@ -1,8 +1,5 @@
 package com.driver.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.springframework.format.annotation.DateTimeFormat;
-
 import javax.persistence.*;
 
 @Entity
@@ -12,7 +9,17 @@ public class Image {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String description;
-    private String dimensions; // in the format HXD, for example: 720X480
+    private String dimensions;
+
+    public Image(int id, String description, String dimensions) {
+        this.id = id;
+        this.description = description;
+        this.dimensions = dimensions;
+    }
+
+    public Image() {
+    }
+
     @ManyToOne
     @JoinColumn
     private Blog blog;
@@ -36,6 +43,7 @@ public class Image {
     public String getDimensions() {
         return dimensions;
     }
+
     public void setDimensions(String dimensions) {
         this.dimensions = dimensions;
     }
